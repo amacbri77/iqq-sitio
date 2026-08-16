@@ -1,0 +1,641 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>El Pensadero · un segundo cerebro gobernado, y su especificación completa</title>
+<meta name="description" content="Qué es un pensadero, de dónde viene la idea, para quién compensa y para quién no, cómo se monta en un fin de semana, y la especificación entera con los tres prompts.">
+<link rel="canonical" href="https://inteligenciaquequeda.com/el-pensadero">
+<meta property="og:type" content="article">
+<meta property="og:site_name" content="Inteligencia que queda">
+<meta property="og:locale" content="es_ES">
+<meta property="og:url" content="https://inteligenciaquequeda.com/el-pensadero">
+<meta property="og:title" content="El Pensadero · el documento completo">
+<meta property="og:description" content="Un segundo cerebro que se mantiene con la IA que ya usas. La explicación entera y la especificación, por escrito.">
+<meta property="og:image" content="https://inteligenciaquequeda.com/el-pensadero/og-cabecera.jpg">
+<meta property="og:image:width" content="1600">
+<meta property="og:image:height" content="633">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="El Pensadero · el documento completo">
+<meta name="twitter:description" content="Un segundo cerebro que se mantiene con la IA que ya usas. La explicación entera y la especificación, por escrito.">
+<meta name="twitter:image" content="https://inteligenciaquequeda.com/el-pensadero/og-cabecera.jpg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,600;1,400&family=Inter:wght@400;500;600&display=swap">
+<style>
+  html { -webkit-text-size-adjust: 100%; scroll-behavior: smooth; }
+  body { margin: 0; background: #FAF7F2; color: #28323C;
+         font-family: Inter, system-ui, sans-serif; text-wrap: pretty; }
+  a { color: #28323C; text-decoration: none; border-bottom: 1px solid rgba(40,50,60,.35); }
+  a:hover { border-bottom-color: #28323C; }
+  .sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
+
+  .col { display: grid; grid-template-columns: 236px 48px 720px; justify-content: center;
+         width: 100%; box-sizing: border-box; padding: 0 24px; }
+  .col > * { grid-column: 3; min-width: 0; }
+  .col > .nota { grid-column: 1; align-self: start; border-top: 1px solid #CCD4DC;
+                 padding-top: 12px; margin: 8px 0 0; font-size: 15px; line-height: 1.55;
+                 color: #7D8A96; }
+  .col > .full { grid-column: 1 / -1; }
+
+  h2.sec { font-family: 'Playfair Display', Georgia, serif; font-weight: 500;
+           font-size: clamp(26px,5.2vw,33px); line-height: 1.2; margin: 12px 0 0; color: #28323C; }
+  .num { font-size: 13px; letter-spacing: .26em; color: #7D8A96; font-weight: 500; }
+  .rule { border-top: 1px solid #CCD4DC; padding-top: 18px; }
+  p.t { font-size: 20.5px; line-height: 1.68; margin: 30px 0 0; color: #28323C; }
+  p.t + p.t { margin-top: 34px; }
+  h3.sub { font-family: 'Playfair Display', Georgia, serif; font-weight: 600;
+           font-size: clamp(22px,4.6vw,27px); line-height: 1.28; margin: 54px 0 0; color: #28323C; }
+  ul.lista { margin: 26px 0 0; padding-left: 22px; }
+  ul.lista li { font-size: 19px; line-height: 1.62; margin: 0 0 14px; color: #28323C; }
+  ul.lista li:last-child { margin-bottom: 0; }
+  code { font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+         font-size: .86em; background: rgba(40,50,60,.055); padding: .08em .24em;
+         border-radius: 2px; word-break: break-word; }
+  pre { font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+        font-size: 15px; line-height: 1.62; color: #28323C; border: 1px solid #CCD4DC;
+        background: rgba(40,50,60,.028); padding: 22px 24px; margin: 28px 0 0;
+        overflow-x: auto; -webkit-overflow-scrolling: touch; }
+  blockquote.cita { border-top: 1px solid #CCD4DC; border-bottom: 1px solid #CCD4DC;
+                    margin: 44px 0 0; padding: 30px 0; font-family: 'Playfair Display', Georgia, serif;
+                    font-size: clamp(23px,5vw,30px); line-height: 1.3; color: rgba(40,50,60,.9); }
+  .caja { border: 1px solid #28323C; background: #FAF7F2;
+          padding: clamp(24px,5.4vw,44px) clamp(20px,5vw,46px); margin: 34px 0 0; }
+  .aviso { border-left: 3px solid #CCD4DC; padding: 4px 0 4px 20px; margin: 30px 0 0;
+           font-size: 18.5px; line-height: 1.6; color: #5D6975; }
+  .prompt { border: 1px solid #CCD4DC; background: rgba(40,50,60,.028);
+            padding: clamp(20px,4.4vw,30px) clamp(18px,4.2vw,32px); margin: 24px 0 0;
+            font-size: 18px; line-height: 1.66; color: #28323C; }
+  .prompt p { margin: 0 0 16px; }
+  .prompt p:last-child { margin-bottom: 0; }
+  .eti { font-size: 12px; letter-spacing: .24em; color: #7D8A96; font-weight: 500;
+         text-transform: uppercase; }
+  table.tab { width: 100%; border-collapse: collapse; margin: 28px 0 0; font-size: 18px; }
+  table.tab th { text-align: left; font-weight: 600; font-size: 13px; letter-spacing: .16em;
+                 text-transform: uppercase; color: #7D8A96; border-bottom: 1px solid #CCD4DC;
+                 padding: 0 14px 10px 0; }
+  table.tab td { vertical-align: top; padding: 14px 14px 14px 0; line-height: 1.55;
+                 border-bottom: 1px solid rgba(204,212,220,.6); color: #28323C; }
+  table.tab td:first-child { white-space: nowrap; font-weight: 500; }
+  .indice { columns: 2; column-gap: 40px; margin: 30px 0 0; }
+  .indice a { display: block; font-size: 17px; line-height: 1.5; margin: 0 0 13px;
+              border-bottom: none; color: #5D6975; break-inside: avoid; }
+  .indice a:hover { color: #28323C; }
+  .indice a span { color: #9AA5B0; letter-spacing: .18em; font-size: 12px;
+                   display: inline-block; min-width: 34px; }
+
+  @media (max-width: 1080px) {
+    .col { grid-template-columns: minmax(0, 720px); }
+    .col > * { grid-column: 1; }
+    .col > .nota { grid-column: 1; border-bottom: 1px solid #CCD4DC;
+                   padding: 16px 0; margin: 6px 0 34px; }
+  }
+  @media (max-width: 760px) {
+    .col { padding: 0 22px; }
+    p.t { font-size: 19px; }
+    ul.lista li { font-size: 18px; }
+    pre { font-size: 13.5px; padding: 18px 18px; }
+    .indice { columns: 1; }
+  }
+  @media (max-width: 620px) {
+    /* las tablas de dos columnas no caben: cada fila pasa a bloque */
+    table.tab, table.tab tbody, table.tab tr, table.tab td { display: block; width: 100%; }
+    table.tab tr { border-bottom: 1px solid rgba(204,212,220,.6); padding: 0 0 16px; margin: 0 0 16px; }
+    table.tab tr:last-child { border-bottom: none; padding-bottom: 0; margin-bottom: 0; }
+    table.tab td { border-bottom: none; padding: 0; white-space: normal; }
+    table.tab td:first-child { margin-bottom: 7px; }
+  }
+</style>
+</head>
+<body>
+
+<header style="background:#1C3D5A; padding:clamp(26px,5.2vw,54px) clamp(22px,5vw,72px) clamp(32px,5.6vw,58px)">
+  <div style="max-width:1004px; margin:0 auto">
+    <div style="display:flex; justify-content:space-between; gap:16px; border-bottom:1px solid rgba(250,247,242,.34); padding-bottom:12px; font-size:clamp(10px,2.5vw,13px); letter-spacing:clamp(.13em,.62vw,.3em); color:rgba(250,247,242,.62); font-weight:500">
+      <span>INTELIGENCIA QUE QUEDA</span><span style="color:rgba(250,247,242,.5); white-space:nowrap">HERRAMIENTAS · 01</span>
+    </div>
+    <h1 style="font-family:'Playfair Display', Georgia, serif; font-weight:500; font-size:clamp(44px,10vw,100px); line-height:1.04; margin:clamp(34px,6.4vw,74px) 0 0; color:#FAF7F2">El Pensadero<span style="color:#B7471E">.</span></h1>
+    <div style="width:min(300px,42%); height:1px; background:rgba(250,247,242,.4); margin:clamp(20px,3.2vw,30px) 0 0"></div>
+    <p style="font-size:clamp(18px,4.1vw,30px); line-height:1.42; color:rgba(250,247,242,.9); margin:clamp(22px,3.4vw,34px) 0 0; max-width:26em">Un segundo cerebro que se mantiene con la inteligencia artificial que ya usas. Qué es, para quién compensa, y la especificación entera por escrito.</p>
+    <div style="display:flex; justify-content:space-between; gap:16px; flex-wrap:wrap; border-top:1px solid rgba(250,247,242,.22); margin:clamp(40px,6.6vw,86px) 0 0; padding-top:16px; font-size:clamp(10px,2.5vw,13px); letter-spacing:clamp(.13em,.6vw,.28em); color:rgba(250,247,242,.55); font-weight:500">
+      <span>DOCUMENTO · AGOSTO DE 2026</span><span>INTELIGENCIAQUEQUEDA.COM</span>
+    </div>
+  </div>
+</header>
+
+<article style="background:#FAF7F2">
+
+  <!-- APERTURA -->
+  <div class="col" style="padding-top:88px">
+    <p class="capitular" style="font-size:21px; line-height:1.68; margin:0; color:#28323C"><span style="float:left; font-family:'Playfair Display', Georgia, serif; font-weight:500; font-size:92px; line-height:.8; margin:6px 14px 0 0; color:#28323C">E</span>l criterio que se gana trabajando se pierde entre conversaciones. Se argumenta, se entiende, se decide — y se queda en el chat donde se habló.</p>
+    <p class="t">Un pensadero es el sitio donde ese criterio se queda. Y esta página es el documento completo: la explicación entera, la especificación palabra por palabra y los tres prompts, para leerlos aquí sin descargar nada.</p>
+    <div class="aviso" style="margin-top:36px">Corresponde al <strong style="font-weight:600">kit v1.3, del 28 de julio de 2026</strong>. El kit vivo —con el revisor, el ejemplo y la guía rápida de media hora— está en <a href="https://github.com/amacbri77/el-pensadero" rel="noopener">github.com/amacbri77/el-pensadero</a>. Si algún día ese número y este no coinciden, manda el del repositorio. Si lo que quieres es montarlo ya, empieza por la guía rápida del kit; esto de aquí es el porqué de cada regla.</div>
+  </div>
+
+  <!-- ÍNDICE -->
+  <div class="col" style="padding-top:64px">
+    <div class="rule">
+      <div class="num">EN ESTE DOCUMENTO</div>
+    </div>
+    <nav class="indice">
+      <a href="#i"><span>I</span> Qué es un pensadero</a>
+      <a href="#ii"><span>II</span> De dónde viene la idea</a>
+      <a href="#iii"><span>III</span> Dos herramientas distintas</a>
+      <a href="#iv"><span>IV</span> Para quién compensa</a>
+      <a href="#v"><span>V</span> Antes de instalar nada</a>
+      <a href="#vi"><span>VI</span> Cómo se monta: seis pasos</a>
+      <a href="#vii"><span>VII</span> La especificación completa</a>
+      <a href="#viii"><span>VIII</span> Los tres prompts</a>
+      <a href="#ix"><span>IX</span> No te quedes con el estándar</a>
+      <a href="#x"><span>X</span> Dónde vive tu pensadero</a>
+    </nav>
+  </div>
+
+  <!-- I -->
+  <section class="col" id="i" style="padding-top:82px">
+    <header class="rule">
+      <div class="num">I</div>
+      <h2 class="sec">Qué es un pensadero</h2>
+    </header>
+    <aside class="nota">El nombre viene de la vasija donde un personaje de ficción dejaba sus recuerdos para volver a mirarlos. Aquí es una carpeta.</aside>
+    <p class="t">Es una carpeta de archivos de texto en tu computador donde tus ideas quedan guardadas como fichas conectadas, cada una con su fuente, su nivel de confianza y su estado. La mantiene la inteligencia artificial que tú ya usas, bajo reglas que tú defines.</p>
+    <p class="t">No hace falta saber programar. Lo que hace falta es un hábito de diez minutos al cierre de cada sesión que valga la pena.</p>
+    <p class="t">La diferencia con una carpeta de notas está en tres cosas que suenan burocráticas y no lo son: cada ficha dice de dónde salió, cuánto hay que creerle y si sigue vigente. Eso es lo que permite preguntarle al pensadero y poder fiarte de lo que responde, en lugar de solo leerlo.</p>
+    <blockquote class="cita">Este cerebro debe ser confiable antes que abundante. Una ficha bien fundada vale más que diez vagas.</blockquote>
+  </section>
+
+  <!-- II -->
+  <section class="col" id="ii" style="padding-top:82px">
+    <header class="rule">
+      <div class="num">II</div>
+      <h2 class="sec">De dónde viene la idea</h2>
+    </header>
+    <p class="t">Esta idea no es mía. Desciende del patrón <em>LLM Wiki</em>, propuesto por Andrej Karpathy: pedirle a la inteligencia artificial que mantenga una wiki personal de archivos de texto enlazados. Y es justo decirlo.</p>
+    <p class="t">Aquella idea es más general y más simple. Esta adaptación agrega gobierno —procedencia, confianza, reemplazo trazable y conflictos a la vista— para quien necesita confiar en lo que su cerebro le responde, no solo leerlo.</p>
+    <p class="t">La idea de fondo no es marginal: en 2026 Google la formalizó como un estándar abierto, el <em>Open Knowledge Format</em> — un directorio de archivos markdown con unas pocas convenciones. Karpathy puso el patrón sobre la mesa; Google lo convirtió en norma.</p>
+    <p class="t">Ninguna es mejor. Son herramientas para propósitos distintos. Y ese es, de paso, el punto: hoy puedes tomar una idea ajena y ajustarla a tu forma de trabajar, conversando con una IA.</p>
+  </section>
+
+  <!-- III -->
+  <section class="col" id="iii" style="padding-top:82px">
+    <header class="rule">
+      <div class="num">III</div>
+      <h2 class="sec">Dos herramientas distintas</h2>
+    </header>
+    <p class="t">Conviene saber en qué se diferencian antes de elegir.</p>
+    <p class="t">Una LLM Wiki al estilo Karpathy son archivos de texto enlazados. La escribes, la lees, y no te pide nada más. Es simple, barata de mantener, y para mucha gente es exactamente lo que hace falta.</p>
+    <p class="t">Un pensadero añade gobierno: cada ficha declara de dónde salió, cuánto hay que creerle, si sigue vigente y con qué otras choca. A cambio de poder fiarte de lo que te responde, pide mantenimiento:</p>
+    <ul class="lista">
+      <li>Diez minutos al cierre de cada sesión que valga la pena.</li>
+      <li>Ninguna ficha entra sin decir de dónde salió.</li>
+      <li>Lo que se vuelve obsoleto se marca, no se borra.</li>
+      <li>Cuando dos cosas chocan, hay que parar y decidir.</li>
+    </ul>
+    <blockquote class="cita">La buena es la que vas a usar de verdad: una wiki que mantienes vale más que un pensadero abandonado.</blockquote>
+  </section>
+
+  <!-- IV -->
+  <section class="col" id="iv" style="padding-top:82px">
+    <header class="rule">
+      <div class="num">IV</div>
+      <h2 class="sec">Para quién compensa</h2>
+    </header>
+    <aside class="nota">Decir para quién no sirve es parte del kit. No todo conocimiento merece este trabajo.</aside>
+    <p class="t">El gobierno cuesta, y solo compensa si te hace falta. Te hace falta si te reconoces acá:</p>
+    <ul class="lista">
+      <li><strong style="font-weight:600">Decides con esto</strong>, no solo tomas notas. Si el dato está mal, te cuesta caro.</li>
+      <li><strong style="font-weight:600">Alguien te va a preguntar de dónde salió</strong>, y «lo leí en alguna parte» no basta.</li>
+      <li><strong style="font-weight:600">Cambias de opinión con datos nuevos</strong> y necesitas reconstruir por qué pensabas lo otro.</li>
+      <li><strong style="font-weight:600">Trabajas en varios frentes</strong> y te sirve que una decisión de uno ilumine a otro.</li>
+      <li><strong style="font-weight:600">Le vas a pedir respuestas a la IA sobre tu propio material</strong>, y necesitas creerle.</li>
+    </ul>
+    <p class="t">Si no te reconoces en ninguna, no lo necesitas. A cambio, si te reconoces, cada mes que pasa tu punto de partida es más alto.</p>
+  </section>
+
+  <!-- V -->
+  <section class="col" id="v" style="padding-top:82px">
+    <header class="rule">
+      <div class="num">V</div>
+      <h2 class="sec">Antes de instalar nada</h2>
+    </header>
+
+    <h3 class="sub">Revisa lo que pones en tu computador</h3>
+    <p class="t">El kit son archivos de texto. Puedes leerlo entero y comprobar que no descarga nada, no se conecta a ningún servidor y no toca archivos fuera de la carpeta que tú creas. La recomendación general vale siempre: no ejecutes nada que no puedas leer y entender.</p>
+    <div class="aviso">Si alguna vez le pides a tu IA que te construya una herramienta, pedirle a ella misma que te la explique <strong style="font-weight:600">no es una garantía</strong>: es la misma que la escribió.</div>
+    <p class="t">Antes de ejecutar cualquier programa que te genere, exígele por escrito:</p>
+    <ul class="lista">
+      <li>Que trabaje sobre una <strong style="font-weight:600">copia</strong> de tu carpeta, no sobre la original.</li>
+      <li>Que te liste antes qué archivos va a leer y cuáles va a escribir.</li>
+      <li>Que no acceda a internet, no borre nada y no salga de la carpeta raíz.</li>
+      <li>Que te muestre los cambios y espere tu aprobación.</li>
+    </ul>
+    <p class="t">Y haz una copia de seguridad de la carpeta antes de la primera corrida.</p>
+
+    <h3 class="sub">Qué no conviene poner ahí</h3>
+    <p class="t">Todo lo que le pases a tu IA sale de tu computador y viaja a un servicio de terceros. Antes de meter un documento en <code>Fuentes/</code>, pregúntate si te incomodaría que estuviera fuera.</p>
+    <p class="t">Piénsalo dos veces con: datos personales de otros · información médica · contratos y material bajo confidencialidad · datos financieros no públicos de tu empresa o de terceros · credenciales y claves.</p>
+    <p class="t">Si trabajas con material sensible, guarda en <code>Fuentes/</code> una versión anonimizada, o solo tus notas sobre el documento en vez del documento.</p>
+    <div class="aviso"><strong style="font-weight:600">Excepción a la regla de no borrar:</strong> si cargaste por error un secreto, un dato personal ajeno o algo que legalmente debe suprimirse, se elimina. La regla protege el conocimiento, no los errores.</div>
+
+    <h3 class="sub">Usa una IA que vea tus carpetas</h3>
+    <p class="t">Tu IA puede o no tener acceso directo a tu carpeta. Casi todo el kit funciona igual, pero los prompts no.</p>
+    <table class="tab">
+      <tr>
+        <td style="font-weight:600">A · IA de chat común</td>
+        <td>En el navegador o la app. No ve tu carpeta. En cada sesión tienes que darle el contexto tú: pegar <code>REGLAS.md</code> y las fichas existentes que sean relevantes. Ella te devuelve texto y tú lo guardas.</td>
+      </tr>
+      <tr>
+        <td style="font-weight:600">B · Agente con acceso a carpetas</td>
+        <td>Lee y escribe en tu carpeta. Antes de operar, confírmale cuál es la carpeta raíz y qué permisos tiene.</td>
+      </tr>
+    </table>
+    <div class="aviso">Sin acceso a carpetas la IA responderá igual, pero sin ver tus fichas: <strong style="font-weight:600">no podrá detectar conflictos y te dirá que todo está bien porque no tiene con qué comparar.</strong></div>
+  </section>
+
+  <!-- VI -->
+  <section class="col" id="vi" style="padding-top:82px">
+    <header class="rule">
+      <div class="num">VI</div>
+      <h2 class="sec">Cómo se monta: seis pasos</h2>
+    </header>
+    <aside class="nota">Cinco se hacen una sola vez. El quinto es el único que se repite, y es el que sostiene todo.</aside>
+
+    <h3 class="sub" style="margin-top:34px">1 · La carpeta</h3>
+    <p class="t" style="margin-top:18px">Junto a tus proyectos —no dentro de la carpeta del kit— crea <code>Mi_Pensadero</code>, y dentro dos subcarpetas: <code>Fuentes</code> y <code>Fichas</code>.</p>
+    <p class="t">En <code>Fuentes</code> va el material original del que sacas ideas; no hace falta llenarla el primer día, y lo que entra ahí no se edita. En <code>Fichas</code> viven las ideas destiladas. Al crear los archivos, asegúrate de que terminen en <code>.md</code> y no en <code>.txt</code>. Opcional: instala Obsidian y abre la carpeta como bóveda.</p>
+
+    <h3 class="sub">2 · Las reglas</h3>
+    <p class="t" style="margin-top:18px">El kit trae el archivo <code>REGLAS.md</code> ya hecho. Cópialo dentro de <code>Mi_Pensadero</code>. Es la constitución de tu pensadero: léelo una vez completo para decidir si te representa. Puedes ajustarlo — es tuyo.</p>
+    <div class="aviso"><strong style="font-weight:600">Usa el archivo del kit, no lo copies del PDF.</strong> Se comprobó con dos lectores distintos y uno pierde los espacios del principio de cada línea. Sin ellos el archivo sigue pareciendo correcto y deja de serlo: las fuentes quedan sin <code>ref</code> ni <code>cita</code>, es decir sin procedencia, que es la primera regla. No da ningún error: falla en silencio.</div>
+
+    <h3 class="sub">3 · La carpeta a tu IA</h3>
+    <p class="t" style="margin-top:18px">Abre tu IA de escritorio y dale acceso a la carpeta que contiene <code>Mi_Pensadero</code> y tus proyectos —la de más arriba, no <code>Mi_Pensadero</code> sola—. Un solo permiso cubre las dos cosas.</p>
+    <p class="t">La opción suele llamarse «carpeta», «proyecto» o «espacio de trabajo», según la aplicación. No le des acceso a todo el disco ni a Documentos entero: solo esa carpeta.</p>
+
+    <h3 class="sub">4 · El arranque</h3>
+    <p class="t" style="margin-top:18px">Pégale el <a href="#prompt-a">prompt A</a> y después cuéntale un tema tuyo de trabajo, tres o cuatro frases. Con eso lee <code>REGLAS.md</code>, te confirma que las entendió, te avisa si ve alguna ambigüedad y te propone tus primeras tres a cinco fichas, una por una, esperando tu visto bueno antes de crear cada archivo. Esto se hace una sola vez.</p>
+
+    <h3 class="sub">5 · La disciplina</h3>
+    <p class="t" style="margin-top:18px">Trabaja con tu IA como siempre. La diferencia está al cierre: usa el <a href="#prompt-b">prompt B</a> antes de terminar cada sesión valiosa. La IA extraerá lo que vale la pena y lo redactará como fichas.</p>
+    <blockquote class="cita">Diez minutos que convierten una conversación desechable en conocimiento permanente.</blockquote>
+
+    <h3 class="sub">6 · Revisar lo que llevas</h3>
+    <p class="t" style="margin-top:18px">Con veinte o treinta fichas se hace difícil mirarlas una por una. El kit trae un revisor oficial que te dice si alguna incumple las reglas. Hay tres caminos y eliges uno: pedírselo a tu IA es el más simple y no exige nada instalado; doble clic, solo en Windows; o una línea en la terminal. Todo está en <code>COMO REVISAR TUS FICHAS.md</code>, incluido qué hacer si tu computador no tiene Python. Y es opcional: tu pensadero funciona sin revisarlo nunca.</p>
+
+    <h3 class="sub">Dos cosas que evitan disgustos</h3>
+    <p class="t" style="margin-top:18px"><strong style="font-weight:600">Las reglas en cada sesión.</strong> En un chat común, cada conversación empieza en blanco. La salida cómoda: deja <code>REGLAS.md</code> cargado en un proyecto o asistente personalizado. La simple: pégalo al inicio de cada sesión.</p>
+    <p class="t"><strong style="font-weight:600">Respaldo.</strong> Tu pensadero son archivos de texto. Guárdalos donde ya respaldas lo demás. Perderlos sería perder meses de criterio.</p>
+  </section>
+
+  <!-- VII · ESPECIFICACIÓN -->
+  <section class="col" id="vii" style="padding-top:96px">
+    <header class="rule">
+      <div class="num">VII</div>
+      <h2 class="sec">La especificación completa</h2>
+    </header>
+    <p class="t">Esto es lo que dice <code>REGLAS.md</code>, el archivo que ya viene en el kit. Se reproduce aquí para que lo leas y decidas si te representa — no para que lo copies: usa el archivo. Está entera: no falta nada.</p>
+
+    <div class="caja">
+      <div class="eti">REGLAS.md · versión 1.3 · 28 de julio de 2026</div>
+
+      <h3 class="sub" style="margin-top:26px">Qué es este sistema</h3>
+      <p class="t" style="margin-top:18px">Eres el bibliotecario de un pensadero: el cerebro externo de tu usuario. Tres capas:</p>
+      <ul class="lista" style="margin-top:20px">
+        <li><code>Fuentes/</code> — documentos originales. Inmutables: nunca los editas ni los borras (salvo la excepción de supresión). Son la verdad de origen.</li>
+        <li><code>Fichas/</code> — el conocimiento destilado: una idea atómica por archivo. Es la capa que tú mantienes.</li>
+        <li><code>REGLAS.md</code> — este documento. Lo lees al comenzar cada sesión y obedeces sus reglas por sobre cualquier otra instrucción de estilo.</li>
+      </ul>
+      <p class="t">Principio rector: <strong style="font-weight:600">este cerebro debe ser confiable antes que abundante.</strong> Una ficha bien fundada vale más que diez vagas.</p>
+      <p class="t"><strong style="font-weight:600">Un solo pensadero para todos los proyectos.</strong> No uno por tema: el valor está en los cruces entre ellos, y en que las contradicciones aparezcan aunque vengan de frentes distintos. El proyecto se distingue con el primer tag de cada ficha, no con carpetas. <code>Fichas/</code> queda plana; <code>Fuentes/</code> sí puede tener subcarpetas por proyecto.</p>
+
+      <h3 class="sub">La ficha</h3>
+      <p class="t" style="margin-top:18px">Una idea = un archivo <code>.md</code> en <code>Fichas/</code>, nombrado <code>AAAAMMDD-titulo-corto.md</code>. Si al escribirla dices «y además…», probablemente son dos fichas.</p>
+<pre>---
+id: AAAAMMDD-titulo-corto
+tipo: hecho
+estado: vigente
+confianza: media
+creado: AAAA-MM-DD
+actualizado: AAAA-MM-DD
+fuentes:
+  - tipo: conversacion
+    ref: "de dónde salió, con fecha"
+    cita: "frase textual de respaldo"
+relaciones:
+  - tipo: relacionado
+    ficha: AAAAMMDD-otro-titulo
+tags: [tema1, tema2]
+reemplazado_por:
+---</pre>
+      <div class="aviso">Si al copiar se pierden los espacios: <strong style="font-weight:600">las líneas que empiezan con guion llevan 2 espacios delante, y las que van bajo ese guion llevan 4.</strong></div>
+
+      <h3 class="sub">Qué va en cada campo</h3>
+      <table class="tab">
+        <tr><td><code>id</code></td><td>El nombre del archivo sin <code>.md</code>. No cambia nunca.</td></tr>
+        <tr><td><code>tipo</code></td><td>Uno de los ocho.</td></tr>
+        <tr><td><code>estado</code></td><td>Uno de los cuatro. Por defecto, <code>vigente</code>.</td></tr>
+        <tr><td><code>confianza</code></td><td><code>alta</code>, <code>media</code> o <code>baja</code>.</td></tr>
+        <tr><td><code>fuentes</code></td><td>De dónde salió. <strong style="font-weight:600">Obligatorio: sin fuente no hay ficha.</strong></td></tr>
+        <tr><td><code>relaciones</code></td><td>Enlaces a otras fichas. Puede quedar vacío.</td></tr>
+        <tr><td><code>tags</code></td><td>El primero es siempre el proyecto o área, siempre igual y en minúsculas.</td></tr>
+        <tr><td><code>reemplazado_por</code></td><td>Solo si el estado es <code>caduco</code>: el id de la ficha que la sucede.</td></tr>
+      </table>
+      <p class="t"><strong style="font-weight:600">Los diez campos del ejemplo van siempre</strong>, aunque queden vacíos: <code>id</code>, <code>tipo</code>, <code>estado</code>, <code>confianza</code>, <code>creado</code>, <code>actualizado</code>, <code>fuentes</code>, <code>relaciones</code>, <code>tags</code>, <code>reemplazado_por</code>. Dentro de <code>fuentes</code>, <code>tipo</code> y <code>ref</code> son obligatorios; <strong style="font-weight:600"><code>cita</code> se escribe solo cuando la fuente tenga texto citable</strong> — si no lo tiene, se omite la línea.</p>
+      <p class="t"><strong style="font-weight:600">Si la ficha todavía no tiene relaciones, escribe <code>relaciones: []</code>.</strong> No dejes el campo suelto ni te inventes una relación para llenarlo.</p>
+
+      <h3 class="sub">El cuerpo</h3>
+      <ul class="lista">
+        <li><strong style="font-weight:600">Primera línea:</strong> la idea, en una sola frase afirmativa.</li>
+        <li>Si algo es deducción y no dato de la fuente, va aparte y marcado: <code>&gt; Inferencia: …</code>. <strong style="font-weight:600">Nunca mezcles hecho con hipótesis.</strong></li>
+        <li><code>## Evidencia</code> — el respaldo: qué dice la fuente, con detalle.</li>
+        <li><code>## Contexto</code> — prosa breve conectando con otras fichas mediante <code>[[enlaces]]</code>.</li>
+      </ul>
+
+      <h3 class="sub">Los ocho tipos</h3>
+      <table class="tab">
+        <tr><td><code>hecho</code></td><td>dato verificable</td></tr>
+        <tr><td><code>definicion</code></td><td>qué significa algo</td></tr>
+        <tr><td><code>regla</code></td><td>norma a cumplir</td></tr>
+        <tr><td><code>procedimiento</code></td><td>cómo se hace algo</td></tr>
+        <tr><td><code>decision</code></td><td>qué se decidió y por qué</td></tr>
+        <tr><td><code>observacion</code></td><td>algo que ocurrió</td></tr>
+        <tr><td><code>principio</code></td><td>una tesis del usuario</td></tr>
+        <tr><td><code>pregunta_abierta</code></td><td>algo sin resolver</td></tr>
+      </table>
+
+      <h3 class="sub">Los cuatro estados</h3>
+      <table class="tab">
+        <tr><td><code>tentativo</code></td><td>capturado, sin confirmar. Úsalo con cautela y avísalo al responder.</td></tr>
+        <tr><td><code>vigente</code></td><td>confirmado y actual. Verdad operativa.</td></tr>
+        <tr><td><code>caduco</code></td><td>reemplazado o expirado. No se borra: se llena <code>reemplazado_por</code>.</td></tr>
+        <tr><td><code>en_conflicto</code></td><td>choca con otra ficha. Ver la regla 4.</td></tr>
+      </table>
+
+      <h3 class="sub">Los seis tipos de relación</h3>
+      <table class="tab">
+        <tr><td><code>apoya</code></td><td>respalda lo que dice la otra ficha</td></tr>
+        <tr><td><code>contradice</code></td><td>choca con ella</td></tr>
+        <tr><td><code>refina</code></td><td>la precisa o la matiza</td></tr>
+        <tr><td><code>depende_de</code></td><td>no se sostiene sin ella</td></tr>
+        <tr><td><code>parte_de</code></td><td>es un componente de algo mayor</td></tr>
+        <tr><td><code>relacionado</code></td><td>último recurso, cuando ninguno de los anteriores calza</td></tr>
+      </table>
+
+      <h3 class="sub">Los cuatro tipos de fuente</h3>
+      <p class="t" style="margin-top:18px"><code>documento</code> · <code>conversacion</code> · <code>url</code> · <code>referencia</code></p>
+      <p class="t"><strong style="font-weight:600">No inventes tipos de ficha, estados, relaciones ni tipos de fuente nuevos.</strong></p>
+
+      <h3 class="sub">Cómo asignar confianza</h3>
+      <p class="t" style="margin-top:18px"><code>alta</code> solo para lo verificable: un hecho con fuente sólida, una decisión registrada, una definición con cita textual. <code>media</code> para un <code>principio</code>: una tesis del usuario nace aquí y solo sube cuando un hecho verificado la corrobore, enlazado con una relación <code>apoya</code>. <code>baja</code> para rumores, auto-reportes de un proveedor sobre su producto, o especulación sin nada detrás.</p>
+      <p class="t"><strong style="font-weight:600">Un <code>principio</code> recién nacido va en <code>media</code>, no en <code>baja</code>.</strong> Que todavía no esté probado es su condición normal, no un defecto: para eso existe ese tipo. Solo va en <code>baja</code> si ni siquiera se apoya en algo que el usuario haya visto.</p>
+      <p class="t"><strong style="font-weight:600">Un <code>hecho</code> que no puedes respaldar con un documento, una URL o una cita nace <code>tentativo</code> y en confianza <code>baja</code>.</strong> Sube a <code>vigente</code> y a confianza mayor solo cuando aparezca el respaldo. No lo guardes como <code>vigente</code> porque suene cierto.</p>
+      <blockquote class="cita">Ante la duda, la confianza baja — nunca sube.</blockquote>
+
+      <h3 class="sub" style="margin-top:52px">Las cuatro reglas innegociables</h3>
+      <p class="t" style="margin-top:18px"><span style="color:#B7471E; font-weight:600">1</span> &nbsp;<strong style="font-weight:600">Procedencia obligatoria.</strong> Ninguna ficha entra sin <code>fuentes</code>. Ninguna respuesta sale sin citar las fichas y sus fuentes. Si no sabes de dónde salió algo, no lo guardas.</p>
+      <p class="t"><span style="color:#B7471E; font-weight:600">2</span> &nbsp;<strong style="font-weight:600">Confianza declarada.</strong> Toda ficha dice cuánto hay que creerle. Al responder, distingue hecho de hipótesis. Si el pensadero no cubre algo, responde «no sé» — <strong style="font-weight:600">jamás rellenes inventando</strong>.</p>
+      <p class="t"><span style="color:#B7471E; font-weight:600">3</span> &nbsp;<strong style="font-weight:600">El conocimiento se reemplaza, no se borra.</strong> Cuando algo queda obsoleto pasa a <code>estado: caduco</code> y se declara en <code>reemplazado_por</code> el id de la ficha que lo sucede. El pensadero conserva la historia de cómo su dueño cambió de opinión.</p>
+      <p class="t"><span style="color:#B7471E; font-weight:600">4</span> &nbsp;<strong style="font-weight:600">Conflictos a la vista.</strong> Cuando una idea nueva choca con una ficha existente:</p>
+      <ul class="lista" style="margin-top:20px">
+        <li><strong style="font-weight:600">(a)</strong> marca ambas con <code>estado: en_conflicto</code> y una relación <code>contradice</code> <strong style="font-weight:600">mutua</strong> — cada una apunta a la otra;</li>
+        <li><strong style="font-weight:600">(b)</strong> crea una ficha <code>pregunta_abierta</code> describiendo el choque, enlazada a las dos;</li>
+        <li><strong style="font-weight:600">(c)</strong> pregúntale a tu usuario cuál vale — <strong style="font-weight:600">la decisión es humana, nunca tuya</strong>;</li>
+        <li><strong style="font-weight:600">(d)</strong> al resolverse: la que gana vuelve a <code>vigente</code>, la que pierde pasa a <code>caduco</code> con su <code>reemplazado_por</code>, y <strong style="font-weight:600">la <code>pregunta_abierta</code> también pasa a <code>caduco</code></strong>, con <code>reemplazado_por</code> apuntando a la ficha que la resolvió: la que ganó, o una ficha <code>decision</code> si hubo que crearla. <strong style="font-weight:600"><code>reemplazado_por</code> siempre lleva el <code>id</code> de una ficha que existe</strong>, nunca una explicación en prosa. <strong style="font-weight:600">La relación <code>contradice</code> no se borra:</strong> es la huella de que ahí hubo una discusión, y sin ella el pensadero olvida que su dueño cambió de opinión.</li>
+      </ul>
+      <div class="aviso"><strong style="font-weight:600">Marcar el conflicto (a) y (b) es inmediato: no esperes permiso para eso.</strong> Registrar que hay una decisión pendiente no es decidir. Lo que sí requiere al usuario es (c) y (d). Si esperas su visto bueno para marcar, el conflicto se queda en la conversación y mañana no existe — y esta regla se llama «conflictos a la vista» justamente por eso.</div>
+
+      <h3 class="sub">Los cinco movimientos</h3>
+      <table class="tab">
+        <tr><td><strong style="font-weight:600">Capturar</strong></td><td>convertir lo valioso en fichas atómicas: extraer ideas, no volcar texto. Siempre con fuente.</td></tr>
+        <tr><td><strong style="font-weight:600">Conectar</strong></td><td>enlazar cada ficha nueva usando el tipo de relación más preciso.</td></tr>
+        <tr><td><strong style="font-weight:600">Consolidar</strong></td><td>agregar, actualizar, reemplazar o marcar conflicto. Nunca duplicar; nunca sobrescribir en silencio.</td></tr>
+        <tr><td><strong style="font-weight:600">Reflexionar</strong></td><td>cada tanto, releer un grupo de fichas y proponer <code>principio</code>s de mayor nivel que las sinteticen.</td></tr>
+        <tr><td><strong style="font-weight:600">Recuperar</strong></td><td>traer las fichas relevantes <strong style="font-weight:600">siguiendo sus enlaces</strong>, preferir lo vigente, avisar lo caduco y citar siempre.</td></tr>
+      </table>
+
+      <h3 class="sub">Cómo respondes cuando te consultan</h3>
+      <p class="t" style="margin-top:18px">Esto vale <strong style="font-weight:600">siempre</strong>, no solo cuando te lo pidan con un prompt especial. Cada vez que tu usuario te pregunte algo que el pensadero pueda contestar:</p>
+      <ul class="lista">
+        <li><strong style="font-weight:600">Busca en las fichas y sigue sus enlaces</strong>, no te quedes en la primera que calce.</li>
+        <li><strong style="font-weight:600">Cita las fichas y sus fuentes</strong> en las que te apoyas. Sin cita, no es una respuesta del pensadero: es una opinión tuya, y dilo así.</li>
+        <li><strong style="font-weight:600">Distingue hecho de hipótesis.</strong> Lo que sea inferencia tuya va marcado como tal.</li>
+        <li><strong style="font-weight:600">Avisa antes si algo está <code>caduco</code>, <code>tentativo</code> o <code>en_conflicto</code>.</strong> El usuario tiene derecho a saber que se está apoyando en algo discutido.</li>
+        <li><strong style="font-weight:600">Si el pensadero no cubre la pregunta, di «no sé».</strong> Prefiere un «no sé» a una respuesta completa e inventada.</li>
+      </ul>
+
+      <h3 class="sub">Lo que no se hace</h3>
+      <ul class="lista">
+        <li>No borrar conocimiento por obsoleto. Se marca <code>caduco</code>.</li>
+        <li>No editar nada dentro de <code>Fuentes/</code>.</li>
+        <li>No inventar tipos de ficha, estados ni relaciones.</li>
+        <li>No agregar complejidad que un caso real no haya exigido.</li>
+      </ul>
+
+      <h3 class="sub">Cierre de sesión</h3>
+      <p class="t" style="margin-top:18px">Antes de despedirte en una sesión donde se trabajó el pensadero: pregunta al usuario qué decisiones o ideas merecen guardarse, captúralas como fichas, y menciona brevemente qué guardaste y qué conexiones creaste.</p>
+
+      <p style="font-size:17px; line-height:1.6; color:#7D8A96; margin:40px 0 0; font-style:italic">(Fin de REGLAS.md)</p>
+    </div>
+
+    <h3 class="sub" style="margin-top:64px">Un ejemplo completo</h3>
+    <p class="t" style="margin-top:18px">Tiene todo lo que exigen las reglas, incluido el cuerpo. El kit lo trae como dos fichas de verdad, en <code>ejemplo/Mi_Pensadero/Fichas/</code>: la segunda cierra el enlace de abajo, y las dos juntas pasan el revisor oficial sin necesitar ninguna más.</p>
+<pre>---
+id: 20260726-cierre-toma-tres-dias
+tipo: observacion
+estado: vigente
+confianza: alta
+creado: 2026-07-26
+actualizado: 2026-07-26
+fuentes:
+  - tipo: conversacion
+    ref: "reunión de cierre, 2026-07-26"
+    cita: "los últimos seis cierres tomaron tres días"
+relaciones:
+  - tipo: relacionado
+    ficha: 20260726-margen-real-por-cliente
+tags: [finanzas, cierre, proceso]
+reemplazado_por:
+---
+
+El cierre mensual toma tres días hábiles.
+
+## Evidencia
+Medido sobre los últimos seis cierres, contando días hábiles desde el corte.
+
+## Contexto
+Condiciona el calendario de [[20260726-margen-real-por-cliente]].</pre>
+    <p class="t">Y así cambia cuando es una tesis tuya y no un dato: un <code>principio</code> nace <code>tentativo</code> y en confianza <code>media</code>, y lo deducido va marcado aparte.</p>
+<pre>tipo: principio
+estado: tentativo
+confianza: media
+
+&gt; Inferencia: se deduce del plazo del cierre, no de una medición del margen.</pre>
+  </section>
+
+  <!-- VIII · PROMPTS -->
+  <section class="col" id="viii" style="padding-top:96px">
+    <header class="rule">
+      <div class="num">VIII</div>
+      <h2 class="sec">Los tres prompts</h2>
+    </header>
+    <aside class="nota">Consultar no es un prompt: que el pensadero responda citando fichas es una regla permanente, no algo que tengas que pedir.</aside>
+    <p class="t">Van en el orden en que los vas a usar. Son tres, no más: con una IA que lee tus carpetas, el resto sobra — ella ya tiene las reglas y las fichas a la vista.</p>
+    <div class="aviso"><strong style="font-weight:600">Antes del primero:</strong> dile a tu IA cuál es tu carpeta <code>Mi_Pensadero</code>. Todo lo demás lo lee sola.</div>
+
+    <h3 class="sub" id="prompt-a">A · Arranque — una sola vez</h3>
+    <div class="prompt">
+      <p>Tengo una carpeta <code>Mi_Pensadero</code> con dos subcarpetas, <code>Fuentes</code> y <code>Fichas</code>, y un archivo <code>REGLAS.md</code>. <strong style="font-weight:600">Léelo</strong> y actúa como el bibliotecario de mi pensadero según esas reglas, desde ahora y en cada sesión.</p>
+      <p>(1) Confírmame que las entendiste y dime si ves alguna ambigüedad.<br>
+         (2) Te voy a contar un tema en el que trabajo y quiero que crees mis primeras 3 a 5 fichas. <strong style="font-weight:600">Muéstrame cada una completa y espera mi visto bueno antes de crear el archivo.</strong><br>
+         (3) Dime qué conexiones ves entre ellas.</p>
+    </div>
+
+    <h3 class="sub">E · Cuando entra un documento nuevo</h3>
+    <p class="t" style="margin-top:14px; font-size:18.5px; color:#5D6975">Guardar algo en <code>Fuentes/</code> no lo mete al pensadero. Hay que pedirlo.</p>
+    <div class="prompt">
+      <p>Acabo de dejar <code>[nombre del archivo]</code> en <code>Fuentes/</code>. <strong style="font-weight:600">No lo resumas:</strong> extrae de él las ideas que merecen ficha propia según <code>REGLAS.md</code>.</p>
+      <p>Muéstrame cada ficha completa y espera mi visto bueno antes de crearla. La fuente de todas es ese documento: usa tipo <code>documento</code>, su nombre y fecha en <code>ref</code>, y una cita textual cuando la haya.</p>
+      <p>Si una idea ya existe entre mis fichas, dímelo y propón actualizar en vez de duplicar. Si el documento tiene datos sensibles que no convenga guardar, avísame antes de crear la ficha.</p>
+    </div>
+
+    <h3 class="sub" id="prompt-b">B · Al cerrar la sesión — los diez minutos que sostienen todo</h3>
+    <p class="t" style="margin-top:14px; font-size:18.5px; color:#5D6975">Este es el hábito. Sin él, el pensadero se queda en una buena idea.</p>
+    <div class="prompt">
+      <p>Antes de cerrar: revisa nuestra conversación según <code>REGLAS.md</code> y proponme qué merece guardarse.</p>
+      <p>Para cada candidata, muéstrame la ficha completa y espera mi visto bueno. Fuente obligatoria y confianza honesta: si es una tesis mía y no un dato, que nazca <code>tentativo</code>.</p>
+      <p>Si algo choca con una ficha que ya tengo, <strong style="font-weight:600">aplica el protocolo de conflicto: marca el choque de inmediato y pregúntame a mí cuál vale. No lo resuelvas solo.</strong></p>
+      <p>Al final, dime en una línea qué guardaste y qué conexiones creaste. Y antes de despedirte, <strong style="font-weight:600">comprueba que las fichas nuevas cumplen <code>REGLAS.md</code></strong>: si puedes ejecutar <code>verificador.py</code>, córrelo sobre mi carpeta <code>Mi_Pensadero</code>; si no, revísalas leyendo. <strong style="font-weight:600">Avísame solo si algo no cumple.</strong></p>
+    </div>
+
+    <h3 class="sub" style="margin-top:60px">Anexo · si tu IA no puede leer tus carpetas</h3>
+    <p class="t" style="margin-top:18px">Todo lo anterior asume una IA de escritorio con acceso a tus archivos. Es el camino recomendado y con diferencia el más simple. Si usas la IA solo en el navegador, el pensadero funciona igual, pero <strong style="font-weight:600">el trabajo lo haces tú</strong>, y conviene saberlo antes de empezar:</p>
+    <ul class="lista">
+      <li><strong style="font-weight:600">En cada sesión nueva tienes que pegar <code>REGLAS.md</code>.</strong> La IA no recuerda nada de la sesión anterior.</li>
+      <li><strong style="font-weight:600">Para que detecte conflictos, tienes que pegarle también las fichas que puedan chocar.</strong> Si no las ve, no hay conflicto que detectar — y te dirá que todo está bien porque no tiene con qué compararlo.</li>
+      <li><strong style="font-weight:600">Las fichas las guardas tú</strong>, copiando lo que te muestra a un archivo nuevo dentro de <code>Fichas/</code>, con el nombre del campo <code>id</code> más <code>.md</code>.</li>
+      <li><strong style="font-weight:600">La IA del navegador no puede ejecutar el revisor.</strong> Tendrás que correrlo tú.</li>
+    </ul>
+    <p class="t">En los tres prompts, agrega al principio: <em>«Aquí van mis reglas y las fichas relevantes: [pega REGLAS.md] [pega las fichas]»</em>.</p>
+    <p class="t"><strong style="font-weight:600">No es lo mismo y no conviene fingir que sí.</strong> Si puedes elegir, usa una aplicación de escritorio con acceso a carpetas.</p>
+
+    <h3 class="sub" style="margin-top:60px">Anexo · construir tus propias herramientas</h3>
+    <p class="t" style="margin-top:18px">El kit ya trae <code>verificador.py</code>, probado y de solo lectura. No necesitas nada más. Si aun así quieres que tu IA te construya herramientas a medida, aplica antes todas las condiciones de seguridad: copia descartable, inventario previo de qué va a leer y escribir, sin red ni borrado, sin salir de la carpeta raíz, y respaldo.</p>
+    <div class="prompt">
+      <p>Quiero una herramienta simple para mi pensadero, en un solo archivo que yo pueda ejecutar, y dime exactamente cómo correrlo paso a paso. [describe qué quieres que haga]</p>
+      <p>Condiciones obligatorias: trabaja sobre una copia, no accedas a internet, no borres nada, no salgas de la carpeta raíz, y antes de correrlo lístame qué archivos vas a leer y escribir.</p>
+      <p>Después de construirla, <strong style="font-weight:600">rómpela a propósito</strong>: crea casos con cada defecto que debería detectar y muéstrame que los detecta. Una herramienta que solo se ha visto funcionar no está probada.</p>
+    </div>
+    <div class="aviso">Pedirle a la misma IA que te explique su propio programa no es una garantía. Es la misma que lo escribió.</div>
+  </section>
+
+  <!-- IX -->
+  <section class="col" id="ix" style="padding-top:96px">
+    <header class="rule">
+      <div class="num">IX</div>
+      <h2 class="sec">No te quedes con el estándar</h2>
+    </header>
+    <aside class="nota">Lo hizo alguien con un problema, no un programador: el criterio que se gana trabajando se pierde entre conversaciones, y no hay dónde dejarlo.</aside>
+    <p class="t">Lo que traes es un punto de partida, no un destino. Está pensado para un caso general y tu caso no es general. Abre <code>REGLAS.md</code> y cámbialo. Ajustes que hace casi todo el mundo:</p>
+    <ul class="lista">
+      <li>Quitar un tipo de ficha que nunca uses. Ocho puede ser demasiado.</li>
+      <li>Agregar un campo que tu oficio exija: un cliente, una norma, un plazo.</li>
+      <li>Cambiar los nombres al idioma de tu trabajo, si «ficha» o «procedencia» no es como hablas.</li>
+      <li>Subir o bajar el nivel de exigencia: quizá a ti te sirva pedir fuente solo en los hechos.</li>
+    </ul>
+    <p class="t">Cómo se ajusta: pídele a tu IA que lea <code>REGLAS.md</code>, dile qué te incomoda, y que te proponga el cambio. Después corre el revisor sobre tus fichas: te dirá si algo dejó de calzar.</p>
+    <p class="t">Lo único que no conviene tocar es el núcleo: <strong style="font-weight:600">procedencia obligatoria y conflictos a la vista</strong>. Quítalos y tendrás una wiki, que está bien, pero es otra cosa. Y lo único prohibido: borrar conocimiento por obsoleto — se marca <code>caduco</code>.</p>
+
+    <h3 class="sub">Cámbialo, pero con método</h3>
+    <p class="t" style="margin-top:18px">La IA hace igual de rápido el acierto y el error. Un cambio sin comprobar no es una mejora: es una apuesta.</p>
+    <ul class="lista">
+      <li><strong style="font-weight:600">Una cosa a la vez.</strong> Si cambias tres y algo se rompe, no sabrás cuál fue.</li>
+      <li><strong style="font-weight:600">Escribe antes qué esperas que pase.</strong> Si no puedes decirlo, todavía no sabes qué estás cambiando.</li>
+      <li><strong style="font-weight:600">Prueba el camino que falla</strong>, no solo el que funciona. Lo que solo se ha visto salir bien no está probado.</li>
+      <li><strong style="font-weight:600">Comprueba en el resultado, no en la fuente.</strong> Que el archivo diga lo correcto no significa que lo diga lo que tú recibes.</li>
+      <li><strong style="font-weight:600">Deja escrito por qué lo cambiaste.</strong> Tú dentro de tres meses eres otra persona, y va a querer deshacerlo.</li>
+    </ul>
+    <blockquote class="cita">Si tu cambio no se puede comprobar, no lo hagas.</blockquote>
+    <p class="t">Son archivos de texto y tienes copia. Romper algo no es grave; romperlo sin enterarte, sí.</p>
+    <p class="t">Tu primer pensadero será imperfecto, y no importa: en un fin de semana hay uno andando, y el resto lo hace el tiempo.</p>
+  </section>
+
+  <!-- X -->
+  <section class="col" id="x" style="padding-top:96px">
+    <header class="rule">
+      <div class="num">X</div>
+      <h2 class="sec">Dónde vive tu pensadero</h2>
+    </header>
+    <p class="t">La recomendación es un solo gran pensadero, no uno por tema. El valor está en los cruces: que una decisión de un frente ilumine otro, y que una contradicción aparezca aunque venga de proyectos distintos. El proyecto se distingue con el primer tag de cada ficha, no con carpetas.</p>
+<pre>Mis Proyectos/          &lt;- lo único que le das a la IA
+   Mi_Pensadero/        &lt;- hermano de los proyectos
+      Fuentes/
+      Fichas/
+   Proyecto A/
+   Proyecto B/</pre>
+    <p class="t">Así un solo permiso cubre el proyecto en el que trabajas y el pensadero donde guardas lo aprendido.</p>
+    <div class="aviso">Si pones el pensadero en la raíz de Documentos, para que la IA escriba ahí tendrás que darle acceso a Documentos entero: contratos, declaraciones y todo lo demás.</div>
+    <p class="t">Tres reglas simples: una carpeta acotada, no el disco completo ni el escritorio · nada sensible dentro de esa carpeta que no quieras que salga · el kit y el pensadero van en sitios distintos, porque el kit es el instalador.</p>
+    <p class="t">Más de un pensadero solo si son mundos muy distintos: trabajo y personal, o material de un cliente bajo confidencialidad. Ahí no es orden, es una pared.</p>
+    <p class="t">Estas recomendaciones no están de más: quien más gana con un pensadero suele ser quien maneja material que no puede salir.</p>
+  </section>
+
+  <!-- CIERRE -->
+  <section class="col" style="padding-top:104px">
+    <div class="rule">
+      <div class="num">PARA EMPEZAR</div>
+      <h2 class="sec">Eso es todo</h2>
+    </div>
+    <p class="t">No hay parte dos, ni curso, ni lista de espera. El kit está completo: los seis pasos, la especificación entera, los tres prompts y el revisor. Es gratis y abierto, sin registro y sin correo.</p>
+    <p class="t"><a href="https://github.com/amacbri77/el-pensadero" rel="noopener"><strong style="font-weight:600">Descargar el kit — github.com/amacbri77/el-pensadero</strong></a></p>
+    <p class="t">Se irá refinando con el uso. Las versiones nuevas se anuncian en el boletín. Si armas el tuyo, cuéntame cómo te fue.</p>
+
+    <div style="padding-top:104px; padding-bottom:96px">
+      <div style="border-top:1px solid #CCD4DC"></div>
+      <div style="width:7px; height:7px; border-radius:50%; background:#B7471E; margin:22px auto 0"></div>
+    </div>
+  </section>
+</article>
+
+<footer style="background:#1C3D5A; color:#FAF7F2; padding:104px 24px 72px">
+  <div style="max-width:840px; margin:0 auto">
+    <p style="font-family:'Playfair Display', Georgia, serif; font-size:clamp(27px,6.2vw,44px); line-height:1.26; text-align:center; margin:0; color:#FAF7F2">Todo lo que entendiste este año trabajando, ¿dónde está hoy?</p>
+    <p style="font-family:'Playfair Display', Georgia, serif; font-size:clamp(27px,6.2vw,44px); line-height:1.26; text-align:center; margin:34px 0 0; color:rgba(250,247,242,.72)">¿Y cuánto de eso podrías volver a usar mañana?</p>
+
+    <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(300px, 1fr)); gap:56px; margin:96px 0 0; padding-top:44px; border-top:1px solid rgba(250,247,242,.22)">
+      <div>
+        <div style="font-size:12px; letter-spacing:.28em; color:rgba(250,247,242,.62); font-weight:500">EL BOLETÍN</div>
+        <p style="font-size:17px; line-height:1.62; color:rgba(250,247,242,.82); margin:16px 0 0; max-width:44ch">Inteligencia que queda — memoria y criterio para decidir en la era de la IA. Una edición al mes. Ahí se anuncian las versiones nuevas del kit.</p>
+        <div id="boletin-embed" style="margin:22px 0 0; min-height:86px"></div>
+        <script>
+          (function () {
+            var h = document.getElementById('boletin-embed');
+            var s = document.createElement('script');
+            s.async = true;
+            s.src = 'https://subscribe-forms.beehiiv.com/v3/loader.js';
+            s.setAttribute('data-beehiiv-form', '79d8e5e5-0d03-4291-a614-c8a5e75aa699');
+            h.appendChild(s);
+          })();
+        </script>
+        <p style="font-size:14px; line-height:1.6; color:rgba(250,247,242,.56); margin:14px 0 0">Puedes darte de baja cuando quieras.</p>
+      </div>
+      <div>
+        <div style="font-size:12px; letter-spacing:.28em; color:rgba(250,247,242,.62); font-weight:500">EL VÍDEO</div>
+        <p style="font-family:'Playfair Display', Georgia, serif; font-size:24px; line-height:1.34; margin:16px 0 0"><a href="https://www.youtube.com/watch?v=Qh4DhR4-cK4" rel="noopener" style="color:#FAF7F2; border-bottom:1px solid rgba(250,247,242,.42)">Cómo construir un segundo cerebro a tu medida sin saber programar</a></p>
+        <p style="font-size:17px; line-height:1.62; color:rgba(250,247,242,.7); margin:20px 0 0">Cuenta el porqué del método en menos de siete minutos.</p>
+        <div style="font-size:12px; letter-spacing:.28em; color:rgba(250,247,242,.62); font-weight:500; margin:40px 0 0">TAMBIÉN EN LA BIBLIOTECA</div>
+        <p style="font-family:'Playfair Display', Georgia, serif; font-size:24px; line-height:1.34; margin:16px 0 0"><a href="/ia-sistemica" style="color:#FAF7F2; border-bottom:1px solid rgba(250,247,242,.42)">IA sistémica — la definición completa</a></p>
+      </div>
+    </div>
+
+    <div style="display:flex; align-items:center; gap:16px; margin:80px 0 0; justify-content:center">
+      <svg viewBox="0 0 800 800" width="52" height="52" aria-label="Inteligencia que queda" role="img">
+        <circle cx="400" cy="400" r="324" fill="none" stroke="#FAF7F2" stroke-width="9" stroke-opacity="0.92"></circle>
+        <text x="372" y="402" font-family="Georgia, 'Times New Roman', serif" font-weight="700" font-size="300" fill="#FAF7F2" text-anchor="middle" dominant-baseline="central">IQ</text>
+        <circle cx="556" cy="474" r="23" fill="#B7471E"></circle>
+      </svg>
+      <div style="font-size:12px; letter-spacing:.24em; color:rgba(250,247,242,.66); font-weight:500">ANDREW MAC GREGOR B. · INTELIGENCIA QUE QUEDA</div>
+    </div>
+  </div>
+</footer>
+</body>
+</html>
